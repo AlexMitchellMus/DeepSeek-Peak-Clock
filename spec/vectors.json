@@ -1,0 +1,541 @@
+{
+  "schema": 1,
+  "generated_by": "spec/vectors.mjs (port of deepakness.com/deepseek inline JS)",
+  "switch_minutes": [
+    60,
+    240,
+    360,
+    600
+  ],
+  "weekend_rule_start": "2026-08-22T16:00:00Z",
+  "cn_holidays": [
+    [
+      "2026-09-25",
+      "2026-09-27"
+    ],
+    [
+      "2026-10-01",
+      "2026-10-07"
+    ]
+  ],
+  "instants": [
+    {
+      "t": "2026-10-30T00:59:00Z",
+      "kind": "off",
+      "minute_of_day": 59,
+      "window_start": "2026-10-29T10:00:00Z",
+      "window_end": "2026-10-30T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-30T01:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 60,
+      "window_start": "2026-10-30T01:00:00Z",
+      "window_end": "2026-10-30T04:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-10-30T03:59:59Z",
+      "kind": "peak",
+      "minute_of_day": 239,
+      "window_start": "2026-10-30T01:00:00Z",
+      "window_end": "2026-10-30T04:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-10-30T04:00:00Z",
+      "kind": "off",
+      "minute_of_day": 240,
+      "window_start": "2026-10-30T04:00:00Z",
+      "window_end": "2026-10-30T06:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-30T05:59:00Z",
+      "kind": "off",
+      "minute_of_day": 359,
+      "window_start": "2026-10-30T04:00:00Z",
+      "window_end": "2026-10-30T06:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-30T06:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 360,
+      "window_start": "2026-10-30T06:00:00Z",
+      "window_end": "2026-10-30T10:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-10-30T09:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 540,
+      "window_start": "2026-10-30T06:00:00Z",
+      "window_end": "2026-10-30T10:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-10-30T09:59:59Z",
+      "kind": "peak",
+      "minute_of_day": 599,
+      "window_start": "2026-10-30T06:00:00Z",
+      "window_end": "2026-10-30T10:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-10-30T10:00:00Z",
+      "kind": "off",
+      "minute_of_day": 600,
+      "window_start": "2026-10-30T10:00:00Z",
+      "window_end": "2026-11-02T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-30T23:59:00Z",
+      "kind": "off",
+      "minute_of_day": 1439,
+      "window_start": "2026-10-30T10:00:00Z",
+      "window_end": "2026-11-02T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-08-15T02:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 120,
+      "window_start": "2026-08-15T01:00:00Z",
+      "window_end": "2026-08-15T04:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-08-16T02:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 120,
+      "window_start": "2026-08-16T01:00:00Z",
+      "window_end": "2026-08-16T04:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-08-22T15:59:00Z",
+      "kind": "off",
+      "minute_of_day": 959,
+      "window_start": "2026-08-22T10:00:00Z",
+      "window_end": "2026-08-24T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-08-22T16:00:00Z",
+      "kind": "off",
+      "minute_of_day": 960,
+      "window_start": "2026-08-22T10:00:00Z",
+      "window_end": "2026-08-24T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-08-22T16:01:00Z",
+      "kind": "off",
+      "minute_of_day": 961,
+      "window_start": "2026-08-22T10:00:00Z",
+      "window_end": "2026-08-24T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-19T02:00:00Z",
+      "kind": "off",
+      "minute_of_day": 120,
+      "window_start": "2026-09-18T10:00:00Z",
+      "window_end": "2026-09-21T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-19T05:00:00Z",
+      "kind": "off",
+      "minute_of_day": 300,
+      "window_start": "2026-09-18T10:00:00Z",
+      "window_end": "2026-09-21T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-20T07:00:00Z",
+      "kind": "off",
+      "minute_of_day": 420,
+      "window_start": "2026-09-18T10:00:00Z",
+      "window_end": "2026-09-21T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-21T02:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 120,
+      "window_start": "2026-09-21T01:00:00Z",
+      "window_end": "2026-09-21T04:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-09-25T02:00:00Z",
+      "kind": "off",
+      "minute_of_day": 120,
+      "window_start": "2026-09-24T10:00:00Z",
+      "window_end": "2026-09-28T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-26T07:00:00Z",
+      "kind": "off",
+      "minute_of_day": 420,
+      "window_start": "2026-09-24T10:00:00Z",
+      "window_end": "2026-09-28T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-27T09:30:00Z",
+      "kind": "off",
+      "minute_of_day": 570,
+      "window_start": "2026-09-24T10:00:00Z",
+      "window_end": "2026-09-28T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-28T02:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 120,
+      "window_start": "2026-09-28T01:00:00Z",
+      "window_end": "2026-09-28T04:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-10-01T02:00:00Z",
+      "kind": "off",
+      "minute_of_day": 120,
+      "window_start": "2026-09-30T10:00:00Z",
+      "window_end": "2026-10-08T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-03T06:30:00Z",
+      "kind": "off",
+      "minute_of_day": 390,
+      "window_start": "2026-09-30T10:00:00Z",
+      "window_end": "2026-10-08T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-05T03:00:00Z",
+      "kind": "off",
+      "minute_of_day": 180,
+      "window_start": "2026-09-30T10:00:00Z",
+      "window_end": "2026-10-08T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-07T23:00:00Z",
+      "kind": "off",
+      "minute_of_day": 1380,
+      "window_start": "2026-09-30T10:00:00Z",
+      "window_end": "2026-10-08T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-08T00:59:00Z",
+      "kind": "off",
+      "minute_of_day": 59,
+      "window_start": "2026-09-30T10:00:00Z",
+      "window_end": "2026-10-08T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-10-08T01:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 60,
+      "window_start": "2026-10-08T01:00:00Z",
+      "window_end": "2026-10-08T04:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2027-01-04T06:30:00Z",
+      "kind": "peak",
+      "minute_of_day": 390,
+      "window_start": "2027-01-04T06:00:00Z",
+      "window_end": "2027-01-04T10:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2027-02-14T05:00:00Z",
+      "kind": "off",
+      "minute_of_day": 300,
+      "window_start": "2027-02-12T10:00:00Z",
+      "window_end": "2027-02-15T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2027-06-30T09:00:00Z",
+      "kind": "peak",
+      "minute_of_day": 540,
+      "window_start": "2027-06-30T06:00:00Z",
+      "window_end": "2027-06-30T10:00:00Z",
+      "next_kind": "off"
+    },
+    {
+      "t": "2026-09-18T17:00:00Z",
+      "kind": "off",
+      "minute_of_day": 1020,
+      "window_start": "2026-09-18T10:00:00Z",
+      "window_end": "2026-09-21T01:00:00Z",
+      "next_kind": "peak"
+    },
+    {
+      "t": "2026-09-18T15:00:00Z",
+      "kind": "off",
+      "minute_of_day": 900,
+      "window_start": "2026-09-18T10:00:00Z",
+      "window_end": "2026-09-21T01:00:00Z",
+      "next_kind": "peak"
+    }
+  ],
+  "segments": [
+    {
+      "t": "2026-10-30T09:00:00Z",
+      "offset_minutes": 0,
+      "segments": [
+        {
+          "start": 0,
+          "end": 60,
+          "kind": "off"
+        },
+        {
+          "start": 60,
+          "end": 240,
+          "kind": "peak"
+        },
+        {
+          "start": 240,
+          "end": 360,
+          "kind": "off"
+        },
+        {
+          "start": 360,
+          "end": 600,
+          "kind": "peak"
+        },
+        {
+          "start": 600,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    },
+    {
+      "t": "2026-10-30T09:00:00Z",
+      "offset_minutes": 630,
+      "segments": [
+        {
+          "start": 0,
+          "end": 690,
+          "kind": "off"
+        },
+        {
+          "start": 690,
+          "end": 870,
+          "kind": "peak"
+        },
+        {
+          "start": 870,
+          "end": 990,
+          "kind": "off"
+        },
+        {
+          "start": 990,
+          "end": 1230,
+          "kind": "peak"
+        },
+        {
+          "start": 1230,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    },
+    {
+      "t": "2026-10-30T09:00:00Z",
+      "offset_minutes": -420,
+      "segments": [
+        {
+          "start": 0,
+          "end": 180,
+          "kind": "peak"
+        },
+        {
+          "start": 180,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    },
+    {
+      "t": "2026-09-19T02:00:00Z",
+      "offset_minutes": 630,
+      "segments": [
+        {
+          "start": 0,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    },
+    {
+      "t": "2026-10-05T03:00:00Z",
+      "offset_minutes": 0,
+      "segments": [
+        {
+          "start": 0,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    },
+    {
+      "t": "2026-08-22T16:00:00Z",
+      "offset_minutes": 0,
+      "segments": [
+        {
+          "start": 0,
+          "end": 60,
+          "kind": "off"
+        },
+        {
+          "start": 60,
+          "end": 240,
+          "kind": "peak"
+        },
+        {
+          "start": 240,
+          "end": 360,
+          "kind": "off"
+        },
+        {
+          "start": 360,
+          "end": 600,
+          "kind": "peak"
+        },
+        {
+          "start": 600,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    },
+    {
+      "t": "2026-10-30T20:52:00Z",
+      "offset_minutes": 630,
+      "segments": [
+        {
+          "start": 0,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    },
+    {
+      "t": "2026-10-31T03:00:00Z",
+      "offset_minutes": -420,
+      "segments": [
+        {
+          "start": 0,
+          "end": 180,
+          "kind": "peak"
+        },
+        {
+          "start": 180,
+          "end": 1440,
+          "kind": "off"
+        }
+      ]
+    }
+  ],
+  "windows": [
+    {
+      "t": "2026-10-30T09:00:00Z",
+      "count": 4,
+      "windows": [
+        {
+          "start": "2026-10-30T06:00:00Z",
+          "end": "2026-10-30T10:00:00Z",
+          "kind": "peak",
+          "current": true
+        },
+        {
+          "start": "2026-10-30T10:00:00Z",
+          "end": "2026-11-02T01:00:00Z",
+          "kind": "off",
+          "current": false
+        },
+        {
+          "start": "2026-11-02T01:00:00Z",
+          "end": "2026-11-02T04:00:00Z",
+          "kind": "peak",
+          "current": false
+        },
+        {
+          "start": "2026-11-02T04:00:00Z",
+          "end": "2026-11-02T06:00:00Z",
+          "kind": "off",
+          "current": false
+        }
+      ]
+    },
+    {
+      "t": "2026-09-18T15:30:00Z",
+      "count": 4,
+      "windows": [
+        {
+          "start": "2026-09-18T10:00:00Z",
+          "end": "2026-09-21T01:00:00Z",
+          "kind": "off",
+          "current": true
+        },
+        {
+          "start": "2026-09-21T01:00:00Z",
+          "end": "2026-09-21T04:00:00Z",
+          "kind": "peak",
+          "current": false
+        },
+        {
+          "start": "2026-09-21T04:00:00Z",
+          "end": "2026-09-21T06:00:00Z",
+          "kind": "off",
+          "current": false
+        },
+        {
+          "start": "2026-09-21T06:00:00Z",
+          "end": "2026-09-21T10:00:00Z",
+          "kind": "peak",
+          "current": false
+        }
+      ]
+    },
+    {
+      "t": "2026-10-05T03:00:00Z",
+      "count": 3,
+      "windows": [
+        {
+          "start": "2026-09-30T10:00:00Z",
+          "end": "2026-10-08T01:00:00Z",
+          "kind": "off",
+          "current": true
+        },
+        {
+          "start": "2026-10-08T01:00:00Z",
+          "end": "2026-10-08T04:00:00Z",
+          "kind": "peak",
+          "current": false
+        },
+        {
+          "start": "2026-10-08T04:00:00Z",
+          "end": "2026-10-08T06:00:00Z",
+          "kind": "off",
+          "current": false
+        }
+      ]
+    }
+  ]
+}

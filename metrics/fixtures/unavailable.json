@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "generated_at": null,
+  "source": "status.deepseek.com",
+  "status": null,
+  "latency": null,
+  "balance": null,
+  "error": "no metrics collected yet",
+  "warnings": []
+}

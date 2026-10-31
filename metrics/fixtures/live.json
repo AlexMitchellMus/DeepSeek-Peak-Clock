@@ -1,0 +1,66 @@
+{
+  "schema": 1,
+  "generated_at": "2026-10-30T09:12:00Z",
+  "source": "status.deepseek.com",
+  "status": {
+    "overall": "operational",
+    "label": "All systems operational",
+    "components": [
+      {
+        "id": "01KY4MVS8BM3F9JSYWACGQVG7A",
+        "name": "DeepSeek V4 Pro API",
+        "status": "operational",
+        "uptime": 99.74
+      },
+      {
+        "id": "01KY4MVS8BSBSVW6053QJ37RJE",
+        "name": "DeepSeek V4.1 Flash API",
+        "status": "operational",
+        "uptime": 99.47
+      },
+      {
+        "id": "01M5CB9TP3WGM9TV3DM31CFXAR",
+        "name": "Search API Service",
+        "status": "operational",
+        "uptime": 100
+      },
+      {
+        "id": "01M5CB9TP3H6168N3WJ5AG5S4F",
+        "name": "Fetch API Service",
+        "status": "operational",
+        "uptime": 100
+      },
+      {
+        "id": "01KY4ND2PNYT9FY5W4ZH80VGJ4",
+        "name": "Chat Service",
+        "status": "operational",
+        "uptime": 99.62
+      },
+      {
+        "id": "01KY4ND2PNNFFY6QKV67WFJW8N",
+        "name": "File Upload Service",
+        "status": "operational",
+        "uptime": 100
+      }
+    ],
+    "active_incidents": 0
+  },
+  "latency": {
+    "ok": true,
+    "ms": 214,
+    "p50_ms": 198,
+    "samples": 5,
+    "endpoint": "api.deepseek.com",
+    "checked_at": "2026-10-30T09:11:58Z"
+  },
+  "balance": {
+    "available": true,
+    "currency": "USD",
+    "total": 12.34,
+    "top_up": 10,
+    "granted": 2.34,
+    "key_hint": "sk-…abcd"
+  },
+  "error": null,
+  "warnings": []
+}

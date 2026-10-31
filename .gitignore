@@ -1,0 +1,16 @@
+# build output / scratch
+.tmp/
+.build/
+dist/
+DerivedData/
+*.xcresult
+*.xcuserstate
+xcuserdata/
+.swiftpm/
+
+# generated metrics snapshot (collector output; fixtures are committed)
+metrics/metrics.json
+
+# macOS / node
+.DS_Store
+node_modules/
