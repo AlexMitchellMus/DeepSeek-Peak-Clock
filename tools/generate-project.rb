@@ -96,7 +96,7 @@ app.build_configurations.each do |config|
     'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/../Frameworks',
     'COMBINE_HIDPI_IMAGES' => 'YES',
     'MARKETING_VERSION' => '1.0',
-    'CURRENT_PROJECT_VERSION' => '7',
+    'CURRENT_PROJECT_VERSION' => '8',
   )
   if config.name == 'Debug'
     config.build_settings['SWIFT_OPTIMIZATION_LEVEL'] = '-Onone'
@@ -117,7 +117,7 @@ widget.build_configurations.each do |config|
     'SKIP_INSTALL' => 'YES',
     'LD_RUNPATH_SEARCH_PATHS' => '$(inherited) @executable_path/../../../../Frameworks @executable_path/../Frameworks',
     'MARKETING_VERSION' => '1.0',
-    'CURRENT_PROJECT_VERSION' => '7',
+    'CURRENT_PROJECT_VERSION' => '8',
     'CODE_SIGN_ENTITLEMENTS' => 'Widget/DeepSeekTrackerWidget.entitlements',
   )
 end

@@ -73,9 +73,10 @@ swift test --disable-sandbox --cache-path ../../.tmp/cc --scratch-path ../../.tm
   removes it (i.e. until it is operational again). Latency is three timed requests to
   `api.deepseek.com`; the optional collector on `:8787` adds 90-day uptime and balance.
 * The schedule bar draws `PeakClock.displaySegments` for the display zone — peak windows
-  in red/amber, off-peak in green — with a white notch at the current minute. The
-  per-widget **Show next 24 hours** option (AppIntent configuration) adds a second thin
-  bar covering the rolling next 24 hours, built from `PeakClock.nextSwitches`.
+  in red/amber, off-peak in green — with a white notch at the current minute. The second
+  widget kind (**DeepSeek Tracker · 24h**) adds a thin bar for the rolling next 24 hours,
+  built from `PeakClock.nextSwitches`. Both kinds are plain `StaticConfiguration`s — no
+  AppIntent — so they load with an ad-hoc signature.
 
 ## Troubleshooting
 

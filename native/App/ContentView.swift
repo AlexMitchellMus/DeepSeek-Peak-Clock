@@ -86,7 +86,7 @@ struct ContentView: View {
                     .toggleStyle(.switch)
                     .font(.system(size: 12))
 
-                    Toggle("Also show the next 24 hours", isOn: $nextDayBar)
+                    Toggle("Preview the 24h widget", isOn: $nextDayBar)
                         .toggleStyle(.switch)
                         .font(.system(size: 12))
                 }
@@ -95,7 +95,7 @@ struct ContentView: View {
                     VStack(alignment: .leading, spacing: 7) {
                         step("1", "Move DeepSeek Tracker.app to /Applications and open it once.")
                         step("2", "Right-click the desktop → Edit Widgets.")
-                        step("3", "Search “DeepSeek Tracker”, drag a size out, then right-click it → Edit Widget to turn on the next-24h bar.")
+                        step("3", "Search “DeepSeek Tracker”, drag a size out. Pick “DeepSeek Tracker · 24h” for the extra bar.")
                     }
                     Text("If it isn't listed yet, keep the app open for a few seconds and reopen the widget gallery.")
                         .font(.system(size: 11))

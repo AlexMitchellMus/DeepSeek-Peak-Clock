@@ -1,52 +1,45 @@
 import SwiftUI
 import WidgetKit
-import AppIntents
-
-// MARK: - Configuration
-
-/// Per-widget option shown in the widget gallery ("Edit Widget").
-public struct TrackerWidgetConfiguration: WidgetConfigurationIntent {
-    public static var title: LocalizedStringResource = "DeepSeek Tracker"
-    public static var description = IntentDescription("Choose whether to show the rolling next 24 hours as well.")
-
-    @Parameter(title: "Show next 24 hours", default: false)
-    public var showNextDayBar: Bool
-
-    public init() {}
-}
 
 // MARK: - Timeline
 
 struct TrackerEntry: TimelineEntry {
     let date: Date
     let metrics: MetricsSnapshot
-    let showsNextDayBar: Bool
 }
 
-struct TrackerProvider: AppIntentTimelineProvider {
+struct TrackerProvider: TimelineProvider {
+    /// Widget family this provider serves: normal, or with the rolling 24 h bar.
+    let showsNextDayBar: Bool
+
     func placeholder(in context: Context) -> TrackerEntry {
-        TrackerEntry(date: Date(), metrics: .loading, showsNextDayBar: false)
+        TrackerEntry(date: Date(), metrics: .loading)
     }
 
-    func snapshot(for configuration: TrackerWidgetConfiguration, in context: Context) async -> TrackerEntry {
+    func getSnapshot(in context: Context, completion: @escaping (TrackerEntry) -> Void) {
         if context.isPreview {
-            return TrackerEntry(date: Date(), metrics: .unavailable, showsNextDayBar: configuration.showNextDayBar)
+            completion(TrackerEntry(date: Date(), metrics: .unavailable))
+            return
         }
-        let metrics = await MetricsFetcher.fetch(from: MetricsFetcher.resolvedURL())
-        return TrackerEntry(date: Date(), metrics: metrics, showsNextDayBar: configuration.showNextDayBar)
+        Task {
+            let metrics = await MetricsFetcher.fetchForTimeline()
+            completion(TrackerEntry(date: Date(), metrics: metrics))
+        }
     }
 
-    func timeline(for configuration: TrackerWidgetConfiguration, in context: Context) async -> Timeline<TrackerEntry> {
-        let now = Date()
-        let metrics = await MetricsFetcher.fetch(from: MetricsFetcher.resolvedURL())
-        let entry = TrackerEntry(date: now, metrics: metrics, showsNextDayBar: configuration.showNextDayBar)
+    func getTimeline(in context: Context, completion: @escaping (Timeline<TrackerEntry>) -> Void) {
+        Task {
+            let now = Date()
+            // Always returns something: cached metrics if the network is slow, so the
+            // widget never sits in its redacted placeholder state.
+            let metrics = await MetricsFetcher.fetchForTimeline()
+            let entry = TrackerEntry(date: now, metrics: metrics)
 
-            // Refresh exactly when the price flips, and at least every 15 minutes
-            // so the metrics row stays reasonably fresh.
             let switchDate = PeakClock.nextSwitches(after: now, count: 1).first?.date
                 ?? now.addingTimeInterval(900)
-        let refresh = min(switchDate.addingTimeInterval(5), now.addingTimeInterval(900))
-        return Timeline(entries: [entry], policy: .after(refresh))
+            let refresh = min(switchDate.addingTimeInterval(5), now.addingTimeInterval(900))
+            completion(Timeline(entries: [entry], policy: .after(refresh)))
+        }
     }
 }
 
@@ -56,6 +49,7 @@ struct TrackerWidgetEntryView: View {
     @Environment(\.widgetFamily) private var family
     @Environment(\.colorScheme) private var colorScheme
     let entry: TrackerEntry
+    let showsNextDayBar: Bool
 
     private var size: WidgetSize {
         switch family {
@@ -75,26 +69,36 @@ struct TrackerWidgetEntryView: View {
             showsZone: size != .small,
             liveCountdown: true,
             fillsAvailableSpace: true,
-            showsNextDayBar: entry.showsNextDayBar
+            showsNextDayBar: showsNextDayBar
         )
         .containerBackground(for: .widget) { Color.clear }
     }
 }
 
-// MARK: - Widget
+// MARK: - Widgets
 
+/// The standard widget.
 struct DeepSeekTrackerWidget: Widget {
     var body: some WidgetConfiguration {
-        AppIntentConfiguration(
-            kind: "DeepSeekTrackerWidget",
-            intent: TrackerWidgetConfiguration.self,
-            provider: TrackerProvider()
-        ) { entry in
-            TrackerWidgetEntryView(entry: entry)
+        StaticConfiguration(kind: "DeepSeekTrackerWidget", provider: TrackerProvider(showsNextDayBar: false)) { entry in
+            TrackerWidgetEntryView(entry: entry, showsNextDayBar: false)
         }
         .configurationDisplayName("DeepSeek Tracker")
-        .description("How long until DeepSeek's next off-peak half-price window.")
+        .description("Countdown to DeepSeek's next off-peak price window, with the day's schedule and live API status.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
+        .contentMarginsDisabled()
+    }
+}
+
+/// Same card, with a second bar covering the rolling next 24 hours.
+struct DeepSeekTracker24hWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "DeepSeekTrackerWidget24h", provider: TrackerProvider(showsNextDayBar: true)) { entry in
+            TrackerWidgetEntryView(entry: entry, showsNextDayBar: true)
+        }
+        .configurationDisplayName("DeepSeek Tracker · 24h")
+        .description("The standard card plus a rolling next-24-hours timeline bar underneath.")
+        .supportedFamilies([.systemMedium, .systemLarge])
         .contentMarginsDisabled()
     }
 }
@@ -103,5 +107,6 @@ struct DeepSeekTrackerWidget: Widget {
 struct DeepSeekTrackerWidgetBundle: WidgetBundle {
     var body: some Widget {
         DeepSeekTrackerWidget()
+        DeepSeekTracker24hWidget()
     }
 }

@@ -31,7 +31,27 @@ public enum MetricsFetcher {
               let http = response as? HTTPURLResponse else { return nil }
         guard (200..<300).contains(http.statusCode) else { return nil }
         guard let metrics = try? TrackerMetrics.decode(data) else { return nil }
+        MetricsCache.save(metrics)
         return MetricsSnapshot(metrics: metrics, freshness: metrics.freshness(now: Date()), detail: nil)
+    }
+
+    /// Widget-timeline friendly fetch: returns within `deadline` seconds, falling back
+    /// to the last good payload (or an offline card) so the timeline always completes.
+    public static func fetchForTimeline(deadline: TimeInterval = 5) async -> MetricsSnapshot {
+        let url = resolvedURL()
+        let snapshot = await withTaskGroup(of: MetricsSnapshot?.self) { group -> MetricsSnapshot? in
+            group.addTask { await fetch(from: url) }
+            group.addTask {
+                try? await Task.sleep(nanoseconds: UInt64(deadline * 1_000_000_000))
+                return nil
+            }
+            let first = await group.next() ?? nil
+            group.cancelAll()
+            return first
+        }
+        if let snapshot { return snapshot }
+        if let cached = MetricsCache.load() { return cached }
+        return MetricsSnapshot(freshness: .unavailable, detail: "DeepSeek unreachable")
     }
 
     /// Asks DeepSeek's status page for component health and times the API directly.
@@ -58,6 +78,7 @@ public enum MetricsFetcher {
             latency: latency,
             balance: nil
         )
+        MetricsCache.save(metrics)
         return MetricsSnapshot(
             metrics: metrics,
             freshness: .live,
@@ -65,6 +86,26 @@ public enum MetricsFetcher {
             services: reading?.services ?? [],
             event: reading?.event
         )
+    }
+}
+
+/// Last good payload, cached in the extension's own defaults so a slow network
+/// never leaves the widget in its placeholder state.
+private enum MetricsCache {
+    static let key = "ds.lastGoodMetrics"
+    static let maxAge: TimeInterval = 6 * 60 * 60
+
+    static func save(_ metrics: TrackerMetrics) {
+        guard let data = try? JSONEncoder().encode(metrics) else { return }
+        UserDefaults.standard.set(data, forKey: key)
+    }
+
+    static func load(now: Date = Date()) -> MetricsSnapshot? {
+        guard let data = UserDefaults.standard.data(forKey: key),
+              let metrics = try? TrackerMetrics.decode(data) else { return nil }
+        let age = metrics.generatedAt.map { now.timeIntervalSince($0) } ?? .greatestFiniteMagnitude
+        guard age < maxAge else { return nil }
+        return MetricsSnapshot(metrics: metrics, freshness: .stale, detail: nil)
     }
 }
 
