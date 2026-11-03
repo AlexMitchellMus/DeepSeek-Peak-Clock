@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# Builds a Release copy of DeepSeek Peak Clock, signs it "to run locally", and puts
+# Builds a Release copy of DeepSeek Tracker, signs it "to run locally", and puts
 # an installer next to it in dist/.
 #
-#   ./tools/package.sh            → dist/DeepSeek Peak Clock.app + installer
+#   ./tools/package.sh            → dist/DeepSeek Tracker.app + installer
 #   ./tools/package.sh --no-clean → keep the previous dist/
 set -euo pipefail
 
@@ -38,7 +38,7 @@ xcodebuild -project "$BUILDROOT/native/DeepSeekTracker.xcodeproj" -scheme DeepSe
   build >/dev/null
 
 BUILT="$BUILDROOT/dd/Build/Products/Release/DeepSeekTracker.app"
-APP="$DIST/DeepSeek Peak Clock.app"
+APP="$DIST/DeepSeek Tracker.app"
 rm -rf "$APP"
 ditto "$BUILT" "$APP"
 
@@ -57,14 +57,14 @@ codesign --verify --deep --strict "$APP"
 echo "▸ entitlements on the widget extension"
 codesign -d --entitlements - "$APP/Contents/PlugIns/DeepSeekTrackerWidget.appex" 2>&1 | sed 's/^/  /'
 
-cat > "$DIST/Install DeepSeek Peak Clock.command" <<'INSTALL'
+cat > "$DIST/Install DeepSeek Tracker.command" <<'INSTALL'
 #!/bin/bash
-# Double-click to install DeepSeek Peak Clock into /Applications and launch it.
+# Double-click to install DeepSeek Tracker into /Applications and launch it.
 set -e
 cd "$(dirname "$0")"
-APP="DeepSeek Peak Clock.app"
+APP="DeepSeek Tracker.app"
 DEST="/Applications/$APP"
-LEGACY="/Applications/DeepSeek Tracker.app"
+LEGACY="/Applications/DeepSeek Peak Clock.app"
 EXT="$DEST/Contents/PlugIns/DeepSeekTrackerWidget.appex"
 LSREG="/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister"
 
@@ -76,14 +76,14 @@ fi
 
 echo "Quitting any running copy…"
 pkill -x DeepSeekTracker 2>/dev/null || true
-pkill -f "DeepSeek Peak Clock.app" 2>/dev/null || true
+pkill -f "DeepSeek Tracker.app" 2>/dev/null || true
 pkill -f "DeepSeekTrackerWidget" 2>/dev/null || true
 
 echo "Installing into /Applications…"
 # Remove the pre-rename app so macOS can't resolve the widget to it.
 if [ -d "$LEGACY" ]; then
-  echo "  removing old \"DeepSeek Tracker.app\"…"
-  pkill -f "DeepSeek Tracker.app" 2>/dev/null || true
+  echo "  removing old \"DeepSeek Peak Clock.app\"…"
+  pkill -f "DeepSeek Peak Clock.app" 2>/dev/null || true
   "$LSREG" -u "$LEGACY" 2>/dev/null || true
   rm -rf "$LEGACY"
 fi
@@ -111,25 +111,25 @@ echo "Launching…"
 open "$DEST"
 
 echo
-echo "Done. Now: right-click the desktop → Edit Widgets → search \"DeepSeek Peak Clock\"."
+echo "Done. Now: right-click the desktop → Edit Widgets → search \"DeepSeek Tracker\"."
 echo "If a widget on the desktop still shows the old design, right-click it"
 echo "→ Remove Widget, then add it again from Edit Widgets."
 echo "Metrics: status + latency work with no setup. Uptime/balance need the collector."
 echo
 read -r -p "Press return to close."
 INSTALL
-chmod +x "$DIST/Install DeepSeek Peak Clock.command"
+chmod +x "$DIST/Install DeepSeek Tracker.command"
 
 cat > "$DIST/README.txt" <<'TXT'
-DeepSeek Peak Clock — macOS widget
+DeepSeek Tracker — macOS widget
 ===============================
 
 Install
-  1. Double-click "Install DeepSeek Peak Clock.command" (it copies the app to
+  1. Double-click "Install DeepSeek Tracker.command" (it copies the app to
      /Applications and opens it). If macOS warns about the app, right-click the
      app → Open once.
   2. Right-click the desktop → "Edit Widgets…".
-  3. Search "DeepSeek Peak Clock" and drag the size you want onto the desktop.
+  3. Search "DeepSeek Tracker" and drag the size you want onto the desktop.
 
 What it shows
   • Big countdown until the next off-peak (half-price) window starts.
@@ -148,7 +148,7 @@ Optional extras
 
 Notes
   The app is signed "to run locally" (ad-hoc), not notarized. If macOS refuses to
-  open it, right-click → Open, or run: xattr -dr com.apple.quarantine "/Applications/DeepSeek Peak Clock.app"
+  open it, right-click → Open, or run: xattr -dr com.apple.quarantine "/Applications/DeepSeek Tracker.app"
   Widgets need the app in /Applications and launched once before they appear.
 TXT
 

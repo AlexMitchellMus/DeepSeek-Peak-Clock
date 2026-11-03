@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * DeepSeek Peak Clock — metrics collector.
+ * DeepSeek Tracker — metrics collector.
  *
  * Produces `metrics/metrics.json` exactly per SPEC.md §4 (schema v1) using only
  * the Node.js standard library (Node >= 20, no npm dependencies).
@@ -1509,7 +1509,7 @@ export function startServer(options = {}) {
 
 export class ConfigError extends Error {}
 
-const USAGE = `DeepSeek Peak Clock metrics collector (schema v1)
+const USAGE = `DeepSeek Tracker metrics collector (schema v1)
 
 Usage:
   node collector/status-collector.mjs [options]

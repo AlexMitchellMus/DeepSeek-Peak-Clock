@@ -6,7 +6,7 @@ import AppIntents
 
 /// Per-widget option shown in the widget gallery ("Edit Widget").
 public struct TrackerWidgetConfiguration: WidgetConfigurationIntent {
-    public static var title: LocalizedStringResource = "DeepSeek Peak Clock"
+    public static var title: LocalizedStringResource = "DeepSeek Tracker"
     public static var description = IntentDescription("Choose whether to show the rolling next 24 hours as well.")
 
     @Parameter(title: "Show next 24 hours", default: false)
@@ -92,7 +92,7 @@ struct DeepSeekTrackerWidget: Widget {
         ) { entry in
             TrackerWidgetEntryView(entry: entry)
         }
-        .configurationDisplayName("DeepSeek Peak Clock")
+        .configurationDisplayName("DeepSeek Tracker")
         .description("How long until DeepSeek's next off-peak half-price window.")
         .supportedFamilies([.systemSmall, .systemMedium, .systemLarge])
         .contentMarginsDisabled()

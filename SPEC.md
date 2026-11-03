@@ -1,4 +1,4 @@
-# DeepSeek Peak Clock — Build Spec v1
+# DeepSeek Tracker — Build Spec v1
 
 Track DeepSeek API pricing status (peak vs off-peak) with a **large countdown to the next
 price change**, the switch time in the user's zone, a progress bar for the current window,

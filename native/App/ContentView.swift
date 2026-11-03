@@ -62,7 +62,7 @@ struct ContentView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 22) {
                 VStack(alignment: .leading, spacing: 4) {
-                    Text("DeepSeek Peak Clock")
+                    Text("DeepSeek Tracker")
                         .font(.system(size: 15, weight: .semibold))
                     Text("Time until DeepSeek's next off-peak half-price window.")
                         .font(.system(size: 11))
@@ -93,9 +93,9 @@ struct ContentView: View {
 
                 block("ADD THE WIDGET") {
                     VStack(alignment: .leading, spacing: 7) {
-                        step("1", "Move DeepSeek Peak Clock.app to /Applications and open it once.")
+                        step("1", "Move DeepSeek Tracker.app to /Applications and open it once.")
                         step("2", "Right-click the desktop → Edit Widgets.")
-                        step("3", "Search “DeepSeek Peak Clock”, drag a size out, then right-click it → Edit Widget to turn on the next-24h bar.")
+                        step("3", "Search “DeepSeek Tracker”, drag a size out, then right-click it → Edit Widget to turn on the next-24h bar.")
                     }
                     Text("If it isn't listed yet, keep the app open for a few seconds and reopen the widget gallery.")
                         .font(.system(size: 11))

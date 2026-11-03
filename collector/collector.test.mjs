@@ -1,5 +1,5 @@
 /**
- * Offline test suite for the DeepSeek Peak Clock metrics collector.
+ * Offline test suite for the DeepSeek Tracker metrics collector.
  *
  * Run with:  node --test collector/
  *

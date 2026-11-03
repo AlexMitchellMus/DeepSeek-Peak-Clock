@@ -18,13 +18,13 @@ xcodebuild -project native/DeepSeekTracker.xcodeproj -scheme DeepSeekTracker \
 
 `tools/package.sh` rebuilds the project, re-signs the widget extension with its
 sandbox + network entitlements (needed so a widget can talk to `127.0.0.1`), signs the
-app "to run locally", and writes `dist/DeepSeek Peak Clock.app`,
-`dist/Install DeepSeek Peak Clock.command` and `dist/README.txt`.
+app "to run locally", and writes `dist/DeepSeek Tracker.app`,
+`dist/Install DeepSeek Tracker.command` and `dist/README.txt`.
 
 ## Install
 
-1. Double-click `dist/Install DeepSeek Peak Clock.command` (copies to `/Applications`, opens once).
-2. Right-click the desktop → **Edit Widgets…** → search **DeepSeek Peak Clock**.
+1. Double-click `dist/Install DeepSeek Tracker.command` (copies to `/Applications`, opens once).
+2. Right-click the desktop → **Edit Widgets…** → search **DeepSeek Tracker**.
 
 Widgets are only registered from an app that lives in `/Applications` and has been
 launched once. If it doesn't show up immediately, keep the app open a few seconds and
@@ -84,7 +84,7 @@ swift test --disable-sandbox --cache-path ../../.tmp/cc --scratch-path ../../.tm
   installer if you replaced the app.
 * **`Metrics offline`** — start the collector: `node collector/status-collector.mjs --serve 8787 --interval 60`.
 * **App blocked by Gatekeeper** — right-click the app → Open, or
-  `xattr -dr com.apple.quarantine "/Applications/DeepSeek Peak Clock.app"`.
+  `xattr -dr com.apple.quarantine "/Applications/DeepSeek Tracker.app"`.
 * **Macro plugin error while building** — the project sets `OTHER_SWIFT_FLAGS = -disable-sandbox`
   because the Swift macro plugin server can't nest a sandbox here; keep that flag.
 * **Regenerate the project** — `GEM_HOME=$PWD/.tmp/gems GEM_PATH=$PWD/.tmp/gems ruby tools/generate-project.rb`.

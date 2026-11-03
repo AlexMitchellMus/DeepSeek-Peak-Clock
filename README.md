@@ -1,9 +1,9 @@
-# DeepSeek Peak Clock
+# DeepSeek Tracker
 
 A small macOS desktop widget with one job: **how long until DeepSeek's API goes
 off-peak (half price)**.
 
-<img src="artifacts/screens/widget-light-medium.png" width="470" alt="DeepSeek Peak Clock widget: peak pricing, 1:00:00 until off-peak, schedule bar and API status">
+<img src="artifacts/screens/widget-light-medium.png" width="470" alt="DeepSeek Tracker widget: peak pricing, 1:00:00 until off-peak, schedule bar and API status">
 
 ## What it does
 
@@ -30,10 +30,10 @@ off-peak (half price)**.
 
 A built, locally-signed copy is included in `dist/`:
 
-1. Double-click **`dist/Install DeepSeek Peak Clock.command`** — it copies the app to
+1. Double-click **`dist/Install DeepSeek Tracker.command`** — it copies the app to
    `/Applications`, clears any stale widget registrations, and opens it.
 2. Right-click the desktop → **Edit Widgets…**
-3. Search **DeepSeek Peak Clock** and drag the size you want onto the desktop.
+3. Search **DeepSeek Tracker** and drag the size you want onto the desktop.
 
 If macOS blocks the app the first time, right-click it → **Open** (it's signed
 "to run locally", not notarized). Widgets only appear from an app that is in
