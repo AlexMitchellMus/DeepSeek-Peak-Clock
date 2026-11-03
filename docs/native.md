@@ -42,8 +42,8 @@ native/
 │   └── DeepSeekTrackerWidget.entitlements   app-sandbox + network.client
 ├── Shared/
 │   ├── DesignSystem.swift        palette (light/dark), sizes, card chrome
-│   ├── TrackerCard.swift         the whole card: header, countdown, schedule bar, metrics
-│   ├── DeepSeekStatus.swift      direct status-page parser + latency probe
+│   ├── TrackerCard.swift         the whole card: header, countdown, bars, incident row, metrics
+│   ├── DeepSeekStatus.swift      status-page parser (services + active incident) + latency probe
 │   ├── DisplayZone.swift         localised labels against a UTC offset
 │   └── MetricsStore.swift        localhost fetch + observable store
 └── DeepSeekCore/                 Foundation-only models, tested with SwiftPM
@@ -66,13 +66,16 @@ swift test --disable-sandbox --cache-path ../../.tmp/cc --scratch-path ../../.tm
   a timeline refresh.
 * While off-peak the headline reads **UNTIL PEAK PRICING**; while peak it reads
   **UNTIL OFF-PEAK PRICING**. Either way the number is time to the next price change.
-* Metrics: fetched directly from `status.deepseek.com` (component health, parsed from the
-  page payload) plus three timed requests to `api.deepseek.com`; a local collector on
-  `:8787` is used instead when it is running, because it also knows 90-day uptime and
-  your balance. States: `live`, `stale` (`20m ago`), `loading`, `unavailable`
-  (`Metrics offline`). Prices never depend on the network.
+* Status: `DeepSeekStatus` parses the status page's embedded JSON payload and reads its
+  `active_changes` array — the three services (Pro / Flash / Chat) with their current
+  status, plus the live incident (title, state, start time, affected services). While an
+  incident is listed, the card shows it as an event and keeps showing it until the page
+  removes it (i.e. until it is operational again). Latency is three timed requests to
+  `api.deepseek.com`; the optional collector on `:8787` adds 90-day uptime and balance.
 * The schedule bar draws `PeakClock.displaySegments` for the display zone — peak windows
-  in red/amber, off-peak in green — with a white notch at the current minute.
+  in red/amber, off-peak in green — with a white notch at the current minute. The
+  per-widget **Show next 24 hours** option (AppIntent configuration) adds a second thin
+  bar covering the rolling next 24 hours, built from `PeakClock.nextSwitches`.
 
 ## Troubleshooting
 

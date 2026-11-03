@@ -14,8 +14,13 @@ off-peak (half price)**.
 - **Schedule bar** — the day's peak/off-peak windows drawn in your local time
   (12 am · 6 am · 12 pm · 6 pm) with a notch at "now". It is labelled with the day it
   shows, so a green Saturday reads `SAT · OFF-PEAK ALL DAY` instead of looking broken.
-- **Live metrics** — API status and measured latency, fetched straight from DeepSeek;
-  no API key, no background process. Optional collector adds 90-day uptime and balance.
+- **All three services at a glance** — Pro, Flash and Chat status dots in the header,
+  read live from https://status.deepseek.com/. No API key, no background process.
+- **Incident alerts** — when DeepSeek posts an incident ("investigating", "fix applied,
+  monitoring"), the card shows it as an event with its age and keeps showing it until the
+  status page clears it back to operational.
+- **Coverage while it lasts** — the incident row shows the latest state and how long it
+  has been running; the pill, dots and countdown never depend on the network.
 - **Three sizes, light and dark** — small (countdown + switch time), medium (adds the
   schedule bar and metrics), large (bigger type, service count and incidents).
 - **Works offline** — the countdown is computed locally; only the metrics row needs the
@@ -34,7 +39,7 @@ If macOS blocks the app the first time, right-click it → **Open** (it's signed
 "to run locally", not notarized). Widgets only appear from an app that is in
 `/Applications` and has been launched once.
 
-Optional metrics extras (90-day uptime and your API balance):
+Optional extras (90-day uptime and your API balance):
 
 ```bash
 node collector/status-collector.mjs --serve 8787 --interval 60

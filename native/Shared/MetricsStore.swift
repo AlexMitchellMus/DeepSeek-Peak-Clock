@@ -44,8 +44,8 @@ public enum MetricsFetcher {
             return MetricsSnapshot(freshness: .unavailable, detail: "DeepSeek unreachable")
         }
 
-        let components = (reading?.componentNames ?? []).map {
-            ComponentMetrics(id: $0, name: $0, status: .operational)
+        let components = (reading?.services ?? []).map {
+            ComponentMetrics(id: $0.shortName, name: $0.name, status: $0.status)
         }
         let metrics = TrackerMetrics(
             schema: 1,
@@ -54,11 +54,17 @@ public enum MetricsFetcher {
             overall: reading?.overall ?? .unknown,
             statusLabel: nil,
             components: components,
-            activeIncidents: reading?.activeIncidents ?? 0,
+            activeIncidents: reading?.event == nil ? 0 : 1,
             latency: latency,
             balance: nil
         )
-        return MetricsSnapshot(metrics: metrics, freshness: .live, detail: nil)
+        return MetricsSnapshot(
+            metrics: metrics,
+            freshness: .live,
+            detail: nil,
+            services: reading?.services ?? [],
+            event: reading?.event
+        )
     }
 }
 

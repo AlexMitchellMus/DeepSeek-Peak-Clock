@@ -6,6 +6,7 @@ struct ContentView: View {
     @Environment(\.colorScheme) private var colorScheme
     @AppStorage("ds-size") private var sizeRaw = WidgetSize.medium.rawValue
     @AppStorage("ds-zone") private var zoneRaw = "local"
+    @AppStorage("ds-nextday") private var nextDayBar = false
 
     @StateObject private var metrics = MetricsStore()
     @State private var showCollectorHelp = false
@@ -39,7 +40,8 @@ struct ContentView: View {
                     mode: mode,
                     size: size,
                     zoneOffsetMinutes: usesUTC ? 0 : DisplayZone.offsetMinutes(for: context.date),
-                    showsZone: true
+                    showsZone: true,
+                    showsNextDayBar: nextDayBar
                 )
                 .id("\(mode.rawValue)-\(size.rawValue)")
             }
@@ -83,13 +85,17 @@ struct ContentView: View {
                     ))
                     .toggleStyle(.switch)
                     .font(.system(size: 12))
+
+                    Toggle("Also show the next 24 hours", isOn: $nextDayBar)
+                        .toggleStyle(.switch)
+                        .font(.system(size: 12))
                 }
 
                 block("ADD THE WIDGET") {
                     VStack(alignment: .leading, spacing: 7) {
                         step("1", "Move DeepSeek Peak Clock.app to /Applications and open it once.")
                         step("2", "Right-click the desktop → Edit Widgets.")
-                        step("3", "Search “DeepSeek Peak Clock” and drag a size onto the desktop.")
+                        step("3", "Search “DeepSeek Peak Clock”, drag a size out, then right-click it → Edit Widget to turn on the next-24h bar.")
                     }
                     Text("If it isn't listed yet, keep the app open for a few seconds and reopen the widget gallery.")
                         .font(.system(size: 11))
@@ -111,7 +117,7 @@ struct ContentView: View {
                         .buttonStyle(.borderless)
                     }
 
-                    Text("Status and latency come straight from DeepSeek. The optional collector below adds 90-day uptime and your balance.")
+                    Text("Pro / Flash / Chat dots, incident alerts, status and latency are read straight from status.deepseek.com. The optional collector adds 90-day uptime and your balance.")
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                         .fixedSize(horizontal: false, vertical: true)

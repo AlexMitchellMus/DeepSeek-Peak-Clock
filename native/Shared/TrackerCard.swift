@@ -8,11 +8,23 @@ public struct MetricsSnapshot: Sendable {
     public var freshness: Freshness
     /// Short explanation shown in the unavailable state.
     public var detail: String?
+    /// The three DeepSeek services, when the status page was read directly.
+    public var services: [DeepSeekStatus.Service]
+    /// The incident currently in progress, if any (kept until the page clears it).
+    public var event: DeepSeekStatus.Event?
 
-    public init(metrics: TrackerMetrics? = nil, freshness: Freshness = .unavailable, detail: String? = nil) {
+    public init(
+        metrics: TrackerMetrics? = nil,
+        freshness: Freshness = .unavailable,
+        detail: String? = nil,
+        services: [DeepSeekStatus.Service] = [],
+        event: DeepSeekStatus.Event? = nil
+    ) {
         self.metrics = metrics
         self.freshness = freshness
         self.detail = detail
+        self.services = services
+        self.event = event
     }
 
     /// Nothing has loaded yet.
@@ -46,6 +58,8 @@ public struct TrackerCard: View {
     public let liveCountdown: Bool
     /// Pin to the family's point size (previews, screenshots) or fill the widget area.
     public let fillsAvailableSpace: Bool
+    /// Draw a second bar for the rolling next 24 hours (widget option).
+    public let showsNextDayBar: Bool
 
     @Environment(\.trackerRenderMode) private var isRendering
 
@@ -57,7 +71,8 @@ public struct TrackerCard: View {
         zoneOffsetMinutes: Int = DisplayZone.offsetMinutes(for: Date()),
         showsZone: Bool = true,
         liveCountdown: Bool = false,
-        fillsAvailableSpace: Bool = false
+        fillsAvailableSpace: Bool = false,
+        showsNextDayBar: Bool = false
     ) {
         self.snapshot = snapshot
         self.metrics = metrics
@@ -67,6 +82,7 @@ public struct TrackerCard: View {
         self.showsZone = showsZone
         self.liveCountdown = liveCountdown
         self.fillsAvailableSpace = fillsAvailableSpace
+        self.showsNextDayBar = showsNextDayBar
     }
 
     private var palette: Palette { Palette.of(mode) }
@@ -110,9 +126,14 @@ public struct TrackerCard: View {
             scheduleBar(p, s)
                 .padding(.top, s.gap * 0.85)
 
+            if showsNextDayBar, size != .small {
+                rollingBar(p, s)
+                    .padding(.top, s.gap * 0.45)
+            }
+
             Spacer(minLength: s.gap)
 
-            metricsBlock(p, s)
+            footer(p, s)
         }
         .padding(s.padding)
         .modifier(CardFrame(size: size, fills: fillsAvailableSpace))
@@ -147,9 +168,11 @@ public struct TrackerCard: View {
                     .strokeBorder((snapshot.kind == .peak ? p.peak : p.off).opacity(0.18), lineWidth: 0.5)
             )
 
-            Spacer(minLength: 2)
+            Spacer(minLength: 4)
 
-            if showsZone {
+            if size != .small, !metrics.services.isEmpty {
+                servicesRow(p, s)
+            } else if showsZone {
                 Text(DisplayZone.label(offsetMinutes: zoneOffsetMinutes))
                     .font(p.font(s.eyebrow * 0.92, .medium))
                     .tracking(0.5)
@@ -185,6 +208,7 @@ public struct TrackerCard: View {
 
     /// The day's peak/off-peak schedule in the display zone, with a "now" notch.
     private func scheduleBar(_ p: Palette, _ s: TypeScale) -> some View {
+        // Axis is large-only: medium traded it for the services row / next-day bar.
         let segments = snapshot.segments(offsetMinutes: zoneOffsetMinutes)
         let nowFraction = CGFloat(DisplayZone.minuteOfDay(snapshot.now, offsetMinutes: zoneOffsetMinutes)) / 1440
 
@@ -215,7 +239,7 @@ public struct TrackerCard: View {
             .frame(height: s.barHeight + 7)
             .accessibilityHidden(true)
 
-            if size != .small {
+            if size == .large {
                 HStack(spacing: 0) {
                     ForEach(Array(axisTicks.enumerated()), id: \.offset) { index, tick in
                         Text(tick.label)
@@ -240,6 +264,161 @@ public struct TrackerCard: View {
         if index == 0 { return .leading }
         if index == axisTicks.count - 1 { return .trailing }
         return .center
+    }
+
+    // MARK: services
+
+    /// Three status dots with short labels: Pro · Flash · Chat.
+    private func servicesRow(_ p: Palette, _ s: TypeScale) -> some View {
+        HStack(spacing: s.eyebrow * 0.55) {
+            ForEach(metrics.services) { service in
+                HStack(spacing: s.eyebrow * 0.28) {
+                    Circle()
+                        .fill(serviceColor(service.status))
+                        .frame(width: s.eyebrow * 0.5, height: s.eyebrow * 0.5)
+                    Text(service.shortName)
+                        .font(p.font(s.eyebrow * 0.92, .medium))
+                        .foregroundStyle(p.textSecondary)
+                        .lineLimit(1)
+                }
+                .accessibilityElement(children: .ignore)
+                .accessibilityLabel("\(service.shortName) \(statusWord(service.status))")
+            }
+        }
+    }
+
+    private func serviceColor(_ status: MetricsStatus) -> Color {
+        switch status {
+        case .operational: return palette.off
+        case .degraded: return Color(hex: 0xFF9F0A)
+        case .partialOutage, .fullOutage: return palette.peak
+        case .maintenance: return palette.accent
+        case .unknown: return palette.textTertiary
+        }
+    }
+
+    private func statusWord(_ status: MetricsStatus) -> String {
+        switch status {
+        case .operational: return "operational"
+        case .degraded: return "degraded"
+        case .partialOutage: return "partial outage"
+        case .fullOutage: return "outage"
+        case .maintenance: return "maintenance"
+        case .unknown: return "unknown"
+        }
+    }
+
+    // MARK: footer
+
+    /// Metrics line, or the live incident event while one is in progress.
+    private func footer(_ p: Palette, _ s: TypeScale) -> some View {
+        VStack(alignment: .leading, spacing: s.gap * 0.35) {
+            if let event = metrics.event {
+                eventRow(event, p, s)
+                if size == .large { metricsBlock(p, s) }
+            } else {
+                metricsBlock(p, s)
+            }
+        }
+    }
+
+    private func eventRow(_ event: DeepSeekStatus.Event, _ p: Palette, _ s: TypeScale) -> some View {
+        HStack(spacing: s.metrics * 0.42) {
+            Image(systemName: "exclamationmark.triangle.fill")
+                .font(p.font(s.metrics * 0.78, .semibold))
+                .foregroundStyle(eventColor(event.status))
+            Text(eventLine(event))
+                .font(p.font(s.metrics, .medium))
+                .foregroundStyle(p.textSecondary)
+                .lineLimit(1)
+                .minimumScaleFactor(0.85)
+            Spacer(minLength: 0)
+        }
+        .accessibilityLabel("\(event.title). \(event.status). \(event.affected.joined(separator: ", "))")
+    }
+
+    private func eventLine(_ event: DeepSeekStatus.Event) -> String {
+        var parts = [event.summary.capitalized]
+        if let started = event.startedAt {
+            parts.append(ClockText.duration(snapshot.now.timeIntervalSince(started)))
+        }
+        return parts.joined(separator: " · ")
+    }
+
+    private func eventColor(_ status: String) -> Color {
+        switch status {
+        case "investigating", "identified": return palette.peak
+        case "monitoring": return Color(hex: 0xFF9F0A)
+        default: return palette.textTertiary
+        }
+    }
+
+    // MARK: next 24 hours
+
+    private struct RollSegment {
+        var start: CGFloat
+        var end: CGFloat
+        var kind: PriceKind
+    }
+
+    /// A thin bar for the rolling next `hours`, starting now.
+    private func rollingBar(_ p: Palette, _ s: TypeScale) -> some View {
+        HStack(spacing: s.gap * 0.7) {
+            Canvas { context, size in
+                let barHeight = max(5, s.barHeight * 0.68)
+                let y = (size.height - barHeight) / 2
+                for segment in rollingSegments() {
+                    let start = size.width * segment.start
+                    let end = size.width * segment.end
+                    let rect = CGRect(x: start + 0.75, y: y, width: max(1, end - start - 1.5), height: barHeight)
+                    let color = segment.kind == .peak ? p.peak : p.off
+                    context.fill(
+                        Path(roundedRect: rect, cornerRadius: barHeight / 2),
+                        with: .color(color.opacity(0.85))
+                    )
+                }
+            }
+            .frame(height: s.barHeight + 2)
+
+            Text("NEXT 24H")
+                .font(p.font(s.eyebrow * 0.78, .semibold))
+                .tracking(0.4)
+                .foregroundStyle(p.textTertiary)
+                .fixedSize()
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel("Next 24 hours of peak and off-peak pricing")
+    }
+
+    private func rollingSegments() -> [RollSegment] {
+        let hours = 24.0
+        let start = snapshot.now
+        let end = start.addingTimeInterval(hours * 3_600)
+
+        var marks: [Double] = [0, hours * 60]
+        for item in PeakClock.nextSwitches(after: start, count: 24) where item.date <= end {
+            let minute = item.date.timeIntervalSince(start) / 60
+            if minute > 0, minute < hours * 60 { marks.append(minute) }
+        }
+        marks = Array(Set(marks)).sorted()
+
+        var segments: [RollSegment] = []
+        for index in 0..<max(0, marks.count - 1) {
+            let from = marks[index]
+            let to = marks[index + 1]
+            guard to > from else { continue }
+            let sample = start.addingTimeInterval((from + to) / 2 * 60)
+            let kind = PeakClock.kind(at: sample)
+            let fractionalStart = CGFloat(from / (hours * 60))
+            let fractionalEnd = CGFloat(to / (hours * 60))
+            if var last = segments.last, last.kind == kind {
+                last.end = fractionalEnd
+                segments[segments.count - 1] = last
+            } else {
+                segments.append(RollSegment(start: fractionalStart, end: fractionalEnd, kind: kind))
+            }
+        }
+        return segments
     }
 
     // MARK: metrics
@@ -335,7 +514,12 @@ public struct TrackerCard: View {
     private var subline: String {
         guard let next = snapshot.nextSwitch else { return "no switch scheduled" }
         let verb = next.kind == .peak ? "Peak starts" : "Off-peak starts"
-        return verb + " " + DisplayZone.switchLabel(next.date, now: snapshot.now, offsetMinutes: zoneOffsetMinutes)
+        var text = verb + " " + DisplayZone.switchLabel(next.date, now: snapshot.now, offsetMinutes: zoneOffsetMinutes)
+        // The header shows service dots instead of the zone on medium/large.
+        if showsZone, size != .small, !metrics.services.isEmpty {
+            text += " · " + DisplayZone.label(offsetMinutes: zoneOffsetMinutes)
+        }
+        return text
     }
 
     private var uptimeText: String? {
@@ -364,7 +548,6 @@ public struct TrackerCard: View {
         guard let m = metrics.metrics else { return nil }
         var parts: [String] = []
         if !m.components.isEmpty { parts.append("\(m.components.count) services") }
-        parts.append("\(m.activeIncidents) incidents")
         if let balance = m.balance, balance.available, let total = balance.total {
             let symbol = balance.currency == "USD" ? "$" : ""
             parts.append(symbol + String(format: "%.2f", total) + " credit")

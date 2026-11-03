@@ -1,42 +1,52 @@
 import SwiftUI
 import WidgetKit
+import AppIntents
+
+// MARK: - Configuration
+
+/// Per-widget option shown in the widget gallery ("Edit Widget").
+public struct TrackerWidgetConfiguration: WidgetConfigurationIntent {
+    public static var title: LocalizedStringResource = "DeepSeek Peak Clock"
+    public static var description = IntentDescription("Choose whether to show the rolling next 24 hours as well.")
+
+    @Parameter(title: "Show next 24 hours", default: false)
+    public var showNextDayBar: Bool
+
+    public init() {}
+}
 
 // MARK: - Timeline
 
 struct TrackerEntry: TimelineEntry {
     let date: Date
     let metrics: MetricsSnapshot
+    let showsNextDayBar: Bool
 }
 
-struct TrackerProvider: TimelineProvider {
+struct TrackerProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> TrackerEntry {
-        TrackerEntry(date: Date(), metrics: .loading)
+        TrackerEntry(date: Date(), metrics: .loading, showsNextDayBar: false)
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (TrackerEntry) -> Void) {
+    func snapshot(for configuration: TrackerWidgetConfiguration, in context: Context) async -> TrackerEntry {
         if context.isPreview {
-            completion(TrackerEntry(date: Date(), metrics: .unavailable))
-            return
+            return TrackerEntry(date: Date(), metrics: .unavailable, showsNextDayBar: configuration.showNextDayBar)
         }
-        Task {
-            let metrics = await MetricsFetcher.fetch(from: MetricsFetcher.resolvedURL())
-            completion(TrackerEntry(date: Date(), metrics: metrics))
-        }
+        let metrics = await MetricsFetcher.fetch(from: MetricsFetcher.resolvedURL())
+        return TrackerEntry(date: Date(), metrics: metrics, showsNextDayBar: configuration.showNextDayBar)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<TrackerEntry>) -> Void) {
-        Task {
-            let now = Date()
-            let metrics = await MetricsFetcher.fetch(from: MetricsFetcher.resolvedURL())
-            let entry = TrackerEntry(date: now, metrics: metrics)
+    func timeline(for configuration: TrackerWidgetConfiguration, in context: Context) async -> Timeline<TrackerEntry> {
+        let now = Date()
+        let metrics = await MetricsFetcher.fetch(from: MetricsFetcher.resolvedURL())
+        let entry = TrackerEntry(date: now, metrics: metrics, showsNextDayBar: configuration.showNextDayBar)
 
             // Refresh exactly when the price flips, and at least every 15 minutes
             // so the metrics row stays reasonably fresh.
             let switchDate = PeakClock.nextSwitches(after: now, count: 1).first?.date
                 ?? now.addingTimeInterval(900)
-            let refresh = min(switchDate.addingTimeInterval(5), now.addingTimeInterval(900))
-            completion(Timeline(entries: [entry], policy: .after(refresh)))
-        }
+        let refresh = min(switchDate.addingTimeInterval(5), now.addingTimeInterval(900))
+        return Timeline(entries: [entry], policy: .after(refresh))
     }
 }
 
@@ -64,7 +74,8 @@ struct TrackerWidgetEntryView: View {
             zoneOffsetMinutes: DisplayZone.offsetMinutes(for: entry.date),
             showsZone: size != .small,
             liveCountdown: true,
-            fillsAvailableSpace: true
+            fillsAvailableSpace: true,
+            showsNextDayBar: entry.showsNextDayBar
         )
         .containerBackground(for: .widget) { Color.clear }
     }
@@ -74,7 +85,11 @@ struct TrackerWidgetEntryView: View {
 
 struct DeepSeekTrackerWidget: Widget {
     var body: some WidgetConfiguration {
-        StaticConfiguration(kind: "DeepSeekTrackerWidget", provider: TrackerProvider()) { entry in
+        AppIntentConfiguration(
+            kind: "DeepSeekTrackerWidget",
+            intent: TrackerWidgetConfiguration.self,
+            provider: TrackerProvider()
+        ) { entry in
             TrackerWidgetEntryView(entry: entry)
         }
         .configurationDisplayName("DeepSeek Peak Clock")

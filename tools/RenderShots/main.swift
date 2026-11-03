@@ -57,6 +57,24 @@ enum Fixtures {
         )
     }
 
+    static func services(_ status: MetricsStatus) -> [DeepSeekStatus.Service] {
+        [
+            DeepSeekStatus.Service(name: "DeepSeek V4 Pro API服务(API Service)", shortName: "Pro", status: status),
+            DeepSeekStatus.Service(name: "DeepSeek V4.1 Flash API服务(API Service)", shortName: "Flash", status: status),
+            DeepSeekStatus.Service(name: "对话服务(Chatservice)", shortName: "Chat", status: status),
+        ]
+    }
+
+    static func incident(at now: Date) -> DeepSeekStatus.Event {
+        DeepSeekStatus.Event(
+            title: "DeepSeek Web/API Partially Unavailable",
+            status: "monitoring",
+            startedAt: now.addingTimeInterval(-107 * 60),
+            summary: "fix applied, monitoring",
+            affected: ["Flash", "Chat", "Pro"]
+        )
+    }
+
     static func stale() -> TrackerMetrics {
         var metrics = live()
         metrics.generatedAt = peakNow.addingTimeInterval(-20 * 60)
@@ -78,6 +96,7 @@ struct Shot: View {
     let size: WidgetSize
     let now: Date
     let metrics: MetricsSnapshot
+    var showsNextDayBar: Bool = false
 
     var body: some View {
         ZStack {
@@ -88,7 +107,8 @@ struct Shot: View {
                 mode: mode,
                 size: size,
                 zoneOffsetMinutes: 0,
-                showsZone: size != .small
+                showsZone: size != .small,
+                showsNextDayBar: showsNextDayBar
             )
         }
         .frame(width: size.width + 132, height: size.height + 132)
@@ -117,31 +137,43 @@ enum Renderer {
         let peak = Fixtures.peakNow
         let offPeak = Fixtures.offPeakNow
 
-        let shots: [(String, TrackerMode, WidgetSize, Date, MetricsSnapshot)] = [
-            ("widget-light-small", .light, .small, peak, live),
-            ("widget-dark-small", .dark, .small, peak, live),
-            ("widget-light-medium", .light, .medium, peak, live),
-            ("widget-dark-medium", .dark, .medium, peak, live),
-            ("widget-light-large", .light, .large, peak, live),
-            ("widget-dark-large", .dark, .large, peak, live),
-            ("widget-light-offpeak-medium", .light, .medium, offPeak, live),
-            ("widget-dark-offpeak-large", .dark, .large, offPeak, live),
-            ("widget-dark-degraded-medium", .dark, .medium, peak, degraded),
-            ("widget-light-stale-medium", .light, .medium, peak, stale),
-            ("widget-light-weekend-medium", .light, .medium,
-             ISO8601DateFormatter().date(from: "2026-10-31T12:00:00Z")!, live),
-            ("widget-light-offline-small", .light, .small, peak, .unavailable),
-            ("widget-dark-loading-medium", .dark, .medium, peak, .loading),
+        let ok = MetricsSnapshot(metrics: Fixtures.live(), freshness: .live, services: Fixtures.services(.operational))
+        let down = MetricsSnapshot(
+            metrics: Fixtures.live(), freshness: .live,
+            services: Fixtures.services(.partialOutage),
+            event: Fixtures.incident(at: peak)
+        )
+        var rolling = ok
+        rolling.event = nil
+
+        let weekend = ISO8601DateFormatter().date(from: "2026-10-31T12:00:00Z")!
+
+        let shots: [(name: String, mode: TrackerMode, size: WidgetSize, now: Date, metrics: MetricsSnapshot, rolling: Bool)] = [
+            ("widget-light-medium", .light, .medium, peak, ok, false),
+            ("widget-dark-medium", .dark, .medium, peak, ok, false),
+            ("widget-light-small", .light, .small, peak, ok, false),
+            ("widget-dark-large", .dark, .large, peak, ok, false),
+            ("widget-light-weekend-medium", .light, .medium, weekend, ok, false),
+            ("widget-light-medium-incident", .light, .medium, peak, down, false),
+            ("widget-dark-medium-rolling", .dark, .medium, peak, ok, true),
+            ("widget-light-large-rolling", .light, .large, peak, ok, true),
+            ("widget-dark-large-incident", .dark, .large, peak, down, true),
         ]
 
         var written = 0
-        for (name, mode, size, instant, metrics) in shots {
-            let view = Shot(mode: mode, size: size, now: instant, metrics: metrics)
+        for shot in shots {
+            let view = Shot(
+                mode: shot.mode,
+                size: shot.size,
+                now: shot.now,
+                metrics: shot.metrics,
+                showsNextDayBar: shot.rolling
+            )
             guard let data = png(for: view) else {
-                FileHandle.standardError.write(Data("render failed: \(name)\n".utf8))
+                FileHandle.standardError.write(Data("render failed: \(shot.name)\n".utf8))
                 continue
             }
-            try? data.write(to: out.appendingPathComponent("\(name).png"))
+            try? data.write(to: out.appendingPathComponent("\(shot.name).png"))
             written += 1
         }
         print("\(written)/\(shots.count) screenshots written to \(out.path)")
